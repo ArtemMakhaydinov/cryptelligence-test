@@ -1,4 +1,4 @@
-import { Controller, Get } from '@nestjs/common';
+import { Controller, Get, Param, Query } from '@nestjs/common';
 import { TokenTrackerService } from './token-tracker.service';
 import { TokenInfo } from './dto/token-info.dto';
 
@@ -7,12 +7,12 @@ export class TokenTrackerController {
 	constructor(private readonly tokenTrackerService: TokenTrackerService) {}
 
 	@Get('/')
-	async getJUP(): Promise<any> {
-		return this.tokenTrackerService.getJUP();
+	async getJUPInfo(): Promise<any> {
+		return await this.tokenTrackerService.getJUPInfo();
 	}
 
-	@Get('/t')
-	async getT(): Promise<any> {
-		return this.tokenTrackerService.getT();
+	@Get('/:signature')
+	async getParsedTransactionBySignature(@Param('signature') signature: string): Promise<any> {
+		return await this.tokenTrackerService.getParsedTransactionBySignature(signature);
 	}
 }

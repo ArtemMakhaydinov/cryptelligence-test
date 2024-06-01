@@ -14,20 +14,24 @@ export class TokenTrackerService {
 		this.JUPAddress = 'JUPyiwrYJFskUPiHa7hkeR8VUtAeFoSYbKedZNsDvCN';
 	}
 
-	async getJUP(): Promise<any> {
+	async getJUPInfo(): Promise<any> {
 		try {
-			const JUPPairs = await this.dexConnection.getPairsByAddress(this.JUPAddress);
-			const liquidity = JUPPairs[0].liquidity.usd;
-			const tokenInfo = new TokenInfo();
-			tokenInfo.liquidity = liquidity;
+			const liquidityUSD = await this.dexConnection.getUSDLiquidityByAddress(this.JUPAddress);
+			console.log('liquidityUSD', liquidityUSD);
+			const solanaInfo = await this.solanaConnection.getRecentParsedTransactionWithTransferInstruction(
+				this.JUPAddress
+			);
+
+			console.log('solanaInfo', solanaInfo);
+			const tokenInfo = Object.assign(new TokenInfo(), solanaInfo);
+			tokenInfo.liquidityUSD = liquidityUSD;
 			return tokenInfo;
 		} catch (err) {
 			throw new HttpException(err, HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
 
-	async getT(): Promise<any> {
-		const parsedTransaction = await this.solanaConnection.getRecentParsedTransaction(this.JUPAddress);
-		return parsedTransaction;
+	async getParsedTransactionBySignature(signature: string): Promise<any> {
+		return await this.solanaConnection.getParsedTransactionBySignature(signature);
 	}
 }
