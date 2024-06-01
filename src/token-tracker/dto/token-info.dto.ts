@@ -1,3 +1,3 @@
 export class TokenInfo {
-	// liquidity: string;
+	liquidity: string;
 }

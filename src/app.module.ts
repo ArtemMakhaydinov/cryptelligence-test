@@ -1,8 +1,14 @@
 import { Module } from '@nestjs/common';
 import { TokenTrackerModule } from './token-tracker/token-tracker.module';
+import { ConfigModule } from '@nestjs/config';
 
 @Module({
-	imports: [TokenTrackerModule],
+	imports: [
+		ConfigModule.forRoot({
+			envFilePath: '.env',
+		}),
+		TokenTrackerModule,
+	],
 	controllers: [],
 	providers: [],
 })
