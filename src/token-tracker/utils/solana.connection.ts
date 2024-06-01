@@ -1,4 +1,4 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { Catch, HttpException, HttpStatus, Injectable, InternalServerErrorException } from '@nestjs/common';
 import {
 	ConfirmedSignatureInfo,
 	Connection,
@@ -9,6 +9,7 @@ import {
 import { SolanaInfo } from './dto/solana-info.dto';
 
 @Injectable()
+@Catch(InternalServerErrorException)
 export class SolanaConnection {
 	private readonly endpoint: string;
 	private readonly connection: Connection;
@@ -43,7 +44,7 @@ export class SolanaConnection {
 			return solanaInfo;
 		} catch (err) {
 			console.error(err);
-			throw new HttpException(err, HttpStatus.INTERNAL_SERVER_ERROR);
+			throw new InternalServerErrorException(err);
 		}
 	}
 
@@ -56,11 +57,11 @@ export class SolanaConnection {
 						maxSupportedTransactionVersion: 0,
 					});
 					resolve(parsedTransaction);
-				}, 1000);
+				}, 1100);
 			});
 		} catch (err) {
 			console.error(err);
-			throw new HttpException(err, HttpStatus.INTERNAL_SERVER_ERROR);
+			throw new InternalServerErrorException(err);
 		}
 	}
 
@@ -71,7 +72,7 @@ export class SolanaConnection {
 			return transactions;
 		} catch (err) {
 			console.error(err);
-			throw new HttpException(err, HttpStatus.INTERNAL_SERVER_ERROR);
+			throw new InternalServerErrorException(err);
 		}
 	}
 

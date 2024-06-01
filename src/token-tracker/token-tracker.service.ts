@@ -1,9 +1,10 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { Catch, HttpException, HttpStatus, Injectable, InternalServerErrorException } from '@nestjs/common';
 import { TokenInfo } from './dto/token-info.dto';
 import { SolanaConnection } from 'src/token-tracker/utils/solana.connection';
 import { DexConnection } from 'src/token-tracker/utils/dex.connection';
 
 @Injectable()
+@Catch(InternalServerErrorException)
 export class TokenTrackerService {
 	private readonly JUPAddress: string;
 
@@ -27,7 +28,7 @@ export class TokenTrackerService {
 			tokenInfo.liquidityUSD = liquidityUSD;
 			return tokenInfo;
 		} catch (err) {
-			throw new HttpException(err, HttpStatus.INTERNAL_SERVER_ERROR);
+			throw new InternalServerErrorException(err);
 		}
 	}
 

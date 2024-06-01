@@ -1,6 +1,7 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { Catch, HttpException, HttpStatus, Injectable, InternalServerErrorException } from '@nestjs/common';
 
 @Injectable()
+@Catch(InternalServerErrorException)
 export class DexConnection {
 	private readonly pairsByAddressBaseURL: string;
 
@@ -22,7 +23,7 @@ export class DexConnection {
 			return pairs;
 		} catch (err) {
 			console.error(err);
-			throw new HttpException(err, HttpStatus.INTERNAL_SERVER_ERROR);
+			throw new InternalServerErrorException(err);
 		}
 	}
 }
