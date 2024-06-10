@@ -1,4 +1,4 @@
-import { Catch, HttpException, HttpStatus, Injectable, InternalServerErrorException } from '@nestjs/common';
+import { Catch, Injectable, InternalServerErrorException } from '@nestjs/common';
 import { TokenInfo } from './dto/token-info.dto';
 import { SolanaConnection } from 'src/token-tracker/utils/solana.connection';
 import { DexConnection } from 'src/token-tracker/utils/dex.connection';
@@ -18,15 +18,18 @@ export class TokenTrackerService {
 	async getJUPInfo(): Promise<any> {
 		try {
 			const liquidityUSD = await this.dexConnection.getUSDLiquidityByAddress(this.JUPAddress);
-			console.log('liquidityUSD', liquidityUSD);
 			const solanaInfo = await this.solanaConnection.getRecentParsedTransactionWithTransferInstruction(
 				this.JUPAddress
 			);
 
-			console.log('solanaInfo', solanaInfo);
-			const tokenInfo = Object.assign(new TokenInfo(), solanaInfo);
-			tokenInfo.liquidityUSD = liquidityUSD;
-			return tokenInfo;
+			return new TokenInfo(
+				solanaInfo.transaction,
+				solanaInfo.slot,
+				solanaInfo.amount,
+				solanaInfo.source,
+				solanaInfo.destination,
+				liquidityUSD
+			);
 		} catch (err) {
 			throw new InternalServerErrorException(err);
 		}

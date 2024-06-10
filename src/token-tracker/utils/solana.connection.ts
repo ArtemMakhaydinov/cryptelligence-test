@@ -1,4 +1,4 @@
-import { Catch, HttpException, HttpStatus, Injectable, InternalServerErrorException } from '@nestjs/common';
+import { Catch, Injectable, InternalServerErrorException } from '@nestjs/common';
 import {
 	ConfirmedSignatureInfo,
 	Connection,
@@ -24,7 +24,6 @@ export class SolanaConnection {
 
 	async getRecentParsedTransactionWithTransferInstruction(address: string): Promise<SolanaInfo> {
 		try {
-			const solanaInfo = new SolanaInfo();
 			const recentTransactions = await this.getTransactionsByAddress(address, this.transactionsAmount);
 			for await (const transaction of recentTransactions) {
 				if (transaction?.err !== null) continue;
@@ -32,16 +31,15 @@ export class SolanaConnection {
 				if (!parsedTransaction) continue;
 				const lastTransferInstruction = this.findLastTransferInstruction(parsedTransaction);
 				if (lastTransferInstruction) {
-					solanaInfo.amount = lastTransferInstruction?.parsed?.info?.amount;
-					solanaInfo.destination = lastTransferInstruction?.parsed?.info?.destination;
-					solanaInfo.source = lastTransferInstruction?.parsed?.info?.source;
-					solanaInfo.slot = parsedTransaction?.slot;
-					solanaInfo.transaction = transaction.signature;
-					break;
+					return new SolanaInfo(
+						transaction.signature,
+						parsedTransaction?.slot,
+						lastTransferInstruction?.parsed?.info?.amount,
+						lastTransferInstruction?.parsed?.info?.source,
+						lastTransferInstruction?.parsed?.info?.destination
+					);
 				}
 			}
-
-			return solanaInfo;
 		} catch (err) {
 			console.error(err);
 			throw new InternalServerErrorException(err);

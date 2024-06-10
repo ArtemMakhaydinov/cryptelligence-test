@@ -1,6 +1,5 @@
-import { Controller, Get, Param, Query } from '@nestjs/common';
+import { Controller, Get, Param } from '@nestjs/common';
 import { TokenTrackerService } from './token-tracker.service';
-import { TokenInfo } from './dto/token-info.dto';
 
 @Controller('/token')
 export class TokenTrackerController {
