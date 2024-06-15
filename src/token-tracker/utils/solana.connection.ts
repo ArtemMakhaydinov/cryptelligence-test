@@ -77,18 +77,14 @@ export class SolanaConnection {
 	private findLastTransferInstruction(transaction: ParsedTransactionWithMeta): ParsedInstruction | null {
 		const innerInstructions = transaction?.meta?.innerInstructions;
 		if (!innerInstructions) return null;
-		for (let i = innerInstructions.length - 1; i >= 0; i--) {
-			const { instructions } = innerInstructions[i];
-
-			for (let j = instructions.length - 1; j >= 0; j--) {
-				const instruction = instructions[j];
+		let result = null;
+		innerInstructions.findLast((innerInstruction) => {
+			innerInstruction.instructions.findLast((instruction) => {
 				const type = (instruction as ParsedInstruction)?.parsed?.type;
-				if (type === 'transfer') {
-					return instruction as ParsedInstruction;
-				}
-			}
-		}
+				if (type === 'transfer') return (result = instruction);
+			});
+		});
 
-		return null;
+		return result;
 	}
 }
